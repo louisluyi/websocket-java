@@ -30,10 +30,10 @@ public class ContactServer {
     public void addUserClient(UserClient userClient) throws ClientException{
         String username = userClient.getUsername();
         if(username == null || username.equals("")){
-            throw new ClientException(ClientErrorType.systemError, "用户名不能为空");
+            throw ClientException.builder().errorCode(ClientErrorType.systemError).errorMessage("用户名不能为空").build();
         }
         if(isUserExisted(username)){
-            throw new ClientException(ClientErrorType.userExisted, "用户名已经存在");
+            throw ClientException.builder().errorCode(ClientErrorType.systemError).errorMessage("用户名已经存在").build();
         }
         userClients.add(userClient);
     }
