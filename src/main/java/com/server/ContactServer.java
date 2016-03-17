@@ -2,7 +2,7 @@ package com.server;
 
 import com.exception.ClientErrorType;
 import com.exception.ClientException;
-import com.message.UserClient;
+import com.client.UserClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +39,12 @@ public class ContactServer {
     }
 
     private boolean isUserExisted(String username){
-        for(com.client.UserClient userClient : userClients){
+        for(UserClient userClient : userClients){
             if(userClient.getUsername().equals(username)){
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -53,13 +53,13 @@ public class ContactServer {
      * @param toUsername 对方用户名
      */
     public void sendMessage(String message, String toUsername){
-        com.client.UserClient toUserClient = getUserClient(toUsername);
+        UserClient toUserClient = getUserClient(toUsername);
         if(toUserClient == null) return;
-
+        toUserClient.sendMessage(message);
     }
 
-    private com.client.UserClient getUserClient(String username){
-        for(com.client.UserClient userClient : userClients){
+    private UserClient getUserClient(String username){
+        for(UserClient userClient : userClients){
             if(userClient.getUsername().equals(username)){
                 return userClient;
             }
