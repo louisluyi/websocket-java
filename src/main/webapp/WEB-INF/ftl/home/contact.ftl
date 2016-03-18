@@ -8,9 +8,7 @@
 </head>
 
 <body>
-<form action="/contact" method="post">
-    <input type="text" name="username" /><br>
-    <input type="submit" value="进入聊天室" />
-</form>
+    <label>${username}</label>
+    <textarea></textarea>
 </body>
 </html>

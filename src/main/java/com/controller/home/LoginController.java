@@ -1,6 +1,7 @@
-package com.controller;
+package com.controller.home;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,4 +23,9 @@ public class LoginController {
         return "home/login";
     }
 
+    @RequestMapping(value = "contact", method = RequestMethod.POST)
+    public String contact(@RequestParam("username") String username, ModelMap map){
+        map.addAttribute("username", username);
+        return "home/contact";
+    }
 }
