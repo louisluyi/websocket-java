@@ -4,6 +4,7 @@ import com.exception.ClientErrorType;
 import com.exception.ClientException;
 import com.client.UserClient;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +29,8 @@ public class ContactServer {
     }
 
     public void addUserClient(UserClient userClient) throws ClientException{
-        String username = userClient.getUsername();
-        if(username == null || username.equals("")){
-            throw ClientException.builder().errorCode(ClientErrorType.systemError).errorMessage("用户名不能为空").build();
-        }
-        if(isUserExisted(username)){
-            throw ClientException.builder().errorCode(ClientErrorType.systemError).errorMessage("用户名已经存在").build();
+        if(isUserExisted(userClient.getUsername())){
+            throw ClientException.builder().errorCode(ClientErrorType.userExisted).errorMessage("用户名已经存在").build();
         }
         userClients.add(userClient);
     }
@@ -65,5 +62,9 @@ public class ContactServer {
             }
         }
         return null;
+    }
+
+    public void removeClient(UserClient userClient){
+        userClients.remove(userClient);
     }
 }

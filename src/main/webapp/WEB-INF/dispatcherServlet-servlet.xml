@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	
+
+	<bean id="viewResolver" class="com.viewResolver.MyViewResolver">
+        <property name="defaultViewResolver" ref="beanNameViewResolver"/>
+        <property name="viewResolverMap">
+            <map>
+                <entry>
+                    <key>
+                    	<set>
+		                    <value>.ftl</value>
+                        </set>
+                    </key>
+                    <ref bean="freeMarkerViewResolver"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+    
+    <!--  FreeMarker ViewResolver Configuration -->
+    <bean id="freeMarkerViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="contentType" value="text/html;charset=UTF-8" />
+        <property name="order" value="0" />
+        <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+        <property name="exposeRequestAttributes" value="true" /> 
+        <property name="exposeSessionAttributes" value="true" /> 
+        <property name="exposeSpringMacroHelpers" value="true" />
+    </bean>
+
+    <!-- FreeMarker Configuration -->     
+    <bean id="freemarkerConfig"  class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="configLocation" value="classpath:freemarker.properties"/>
+        <property name="templateLoaderPath" value="/WEB-INF/ftl"/>
+        <!--<property name="freemarkerVariables">
+             <map>
+                <entry key="xml_escape" value-ref="fmXmlEscape"/>
+                <entry key="baseUrl" value="${baseUrl}"></entry>  
+                <entry key="repairUrl" value="${repairUrl}"></entry>
+                <entry key="mallUrl" value="${mallUrl}"></entry>
+                <entry key="mall_assetsUrl" value="${mall_assetsUrl}"></entry>
+                <entry key="repair_assetsUrl" value="${repair_assetsUrl}"></entry>
+                <entry key="staticUrl" value="${staticUrl}"></entry>
+            </map>
+        </property>-->
+    </bean>
+
+    <context:component-scan base-package="com.controller"></context:component-scan>
+
+</beans>

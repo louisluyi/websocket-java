@@ -1,10 +1,15 @@
 package com.client;
 
+import com.exception.ClientErrorType;
 import com.exception.ClientException;
+import com.google.gson.Gson;
 import com.message.MessageDTO;
 import com.server.ContactServer;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -15,42 +20,38 @@ import java.util.List;
 /**
  * Created by luyi-netease on 2016/3/17.
  */
+@Slf4j
 public class UserClient extends MessageInbound{
 
     private static ContactServer contactServer = ContactServer.getInstance();
 
+    @Getter
     private String username;
-    
-    public String getUsername(){
-        return username;
-    }
+
+    private WsOutbound wsOutbound;
 
     public UserClient(){}
 
-    public UserClient(String username){
+    /**
+     * 创建客户端
+     * @param username
+     */
+    public UserClient(String username) throws ClientException{
+        if(StringUtils.isEmpty(username)){
+            throw ClientException.builder().errorCode(ClientErrorType.systemError).errorMessage("用户名不存在").build();
+        }
         this.username = username;
+        contactServer.addUserClient(this);
     }
-    
-    private WsOutbound wsOutbound;
-    
-    public WsOutbound getMyoutbound(){
-        return wsOutbound;
-    } 
 
     @Override
     /**
      * 打开websocket连接
      */
     public void onOpen(WsOutbound outbound){
-        try{
-            System.out.println("Open Client.");
-            this.wsOutbound = outbound;
-            contactServer.addUserClient(this);
-            sendMessage("系统消息： " + username + ", 欢迎进入聊天室!");
-        }
-        catch (ClientException e){
-            sendMessage(e.getErrorMessage());
-        }
+        System.out.println("Open Client.");
+        this.wsOutbound = outbound;
+        sendMessage("系统消息： " + username + ", 欢迎进入聊天室!");
     }
 
     @Override
@@ -58,8 +59,8 @@ public class UserClient extends MessageInbound{
      * 关闭websocket连接
      */
     public void onClose(int status){
-        System.out.println("Close Client.");
-        //todo remove this client
+        log.info("Client closed");
+        contactServer.removeClient(this);
     }
 
     @Override
@@ -67,9 +68,16 @@ public class UserClient extends MessageInbound{
      * 接收文本信息
      */
     public void onTextMessage(CharBuffer cb) throws IOException{
-        String message = cb.toString();
-        MessageDTO messageDTO = new MessageDTO();
-        //todo serialize the String to messageDTO
+        Gson gson = new Gson();
+        try{
+            MessageDTO messageDTO = gson.fromJson(cb.toString(), MessageDTO.class);
+            for(String toUser : messageDTO.getToUsers()){
+                contactServer.sendMessage(messageDTO.getMessage(), toUser);
+            }
+        }
+        catch (Exception e){
+            log.error("接收信息有误");
+        }
     }
 
     @Override

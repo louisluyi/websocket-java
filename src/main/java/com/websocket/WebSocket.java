@@ -1,25 +1,18 @@
-
-package com.hgq.websocket;
-
-import java.util.ArrayList;
+package com.websocket;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.client.UserClient;
-import com.server.ContactServer;
+import com.exception.ClientException;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 
 public class WebSocket extends WebSocketServlet{
 
-    private static ContactServer contactServer = ContactServer.getInstance();
-
     private static final long serialVersionUID = -4853540828121130946L;
 
-    private static ArrayList<UserClient> mmiList = new ArrayList<UserClient>();
-
-    protected StreamInbound createWebSocketInbound(String arg0 , HttpServletRequest arg1){
-        String name = arg1.getParameter("uname");
+    protected StreamInbound createWebSocketInbound(String arg0 , HttpServletRequest arg1) throws ClientException{
+        String name = arg1.getParameter("username");
         return new UserClient(name);
     }
 
@@ -29,7 +22,11 @@ public class WebSocket extends WebSocketServlet{
      * @return
      */
     protected  StreamInbound createWebSocketInbound(String subProtocol){
-        return new UserClient("louis");
+        try {
+            return new UserClient("louis");
+        }
+        catch (ClientException e){
+            return null;
+        }
     }
-
 }

@@ -10,8 +10,15 @@ import lombok.Data;
 @Builder
 public class ClientException extends Exception{
 
+    /**
+     * @see ClientErrorType
+     * 错误码
+     */
     private int errorCode;
 
+    /**
+     * 错误信息
+     */
     private String errorMessage;
 
 }

@@ -1,11 +1,20 @@
 package com.message;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 /**
  * Created by luyi-netease on 2016/3/17.
  * 消息主体
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MessageDTO {
 
     /**

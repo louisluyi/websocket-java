@@ -1,4 +1,4 @@
-package com.hgq.websocket;
+package com.websocket;
 
 import java.io.IOException;
 
@@ -10,14 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginServlet extends HttpServlet{
 
     public void doGet(HttpServletRequest request , HttpServletResponse response) throws ServletException, IOException{
-
         doPost(request, response);
     }
 
     public void doPost(HttpServletRequest request , HttpServletResponse response) throws ServletException, IOException{
-
-        String userName = request.getParameter("userName");
-        request.setAttribute("uname", userName);
+        String userName = request.getParameter("username");
+        request.setAttribute("username", userName);
         request.getRequestDispatcher("MyJsp.jsp").forward(request, response);
     }
 }
