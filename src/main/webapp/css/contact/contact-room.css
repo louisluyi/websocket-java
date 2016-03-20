@@ -1,0 +1,89 @@
+.middle-container{
+    position: fixed;
+    left:50%;
+    top:100px;
+    box-sizing: border-box;
+    margin-left:-400px;
+    width:800px;
+}
+.welcome{
+    text-align: right;
+    font-size:15px;
+    font-weight: normal;
+    line-height:30px;
+}
+#logout{
+    margin-left: 20px;
+    color:#c00;
+}
+.main-container{
+    height:600px;
+    border:1px solid #ddd;
+    border-radius: 5px;
+}
+.user-list{
+    float: left;
+    box-sizing: border-box;
+    width:250px;
+    height:100%;
+    border-right: 1px solid #ddd;
+    background: #eee;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.user-list > .item{
+    box-sizing: border-box;
+    padding:10px;
+    height:65px;
+    cursor:pointer;
+}
+.user-list > .item:hover{
+    background: #c3d6dd;
+}
+.user-list > .selected, .user-list > .selected:hover{
+    background: #acbfdd;
+}
+.user-list .user-img-container{
+    float: left;
+    width:40px;
+    height:40px;
+    background: #ddd;
+    overflow: hidden;
+}
+.user-img-container > img{
+    float: left;
+}
+.user-list .user-content{
+    margin-left: 50px;
+    color:#222;
+}
+.user-content .user-name{
+    width:150px;
+    height:20px;
+    line-height:20px;
+    font-size:14px;
+    white-space: normal;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.user-content .time{
+    position: absolute;
+    right:0;
+    top:0;
+}
+.user-content .text{
+    height:20px;
+    line-height:20px;
+    font-size:13px;
+    white-space: normal;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.contact-content-list{
+    margin-left: 250px;
+    box-sizing: border-box;
+    height:100%;
+    background: #fff;
+    overflow-y: auto;
+    overflow-x: hidden;
+}

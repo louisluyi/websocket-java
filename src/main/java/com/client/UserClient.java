@@ -34,7 +34,7 @@ public class UserClient extends MessageInbound{
 
     /**
      * 创建客户端
-     * @param username
+     * @param username 用户名，必须
      */
     public UserClient(String username) throws ClientException{
         if(StringUtils.isEmpty(username)){

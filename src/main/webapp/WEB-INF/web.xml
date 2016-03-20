@@ -16,33 +16,21 @@
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 
-	<!--<servlet>
+	<servlet>
 		<servlet-name>wsServlet</servlet-name>
 		<servlet-class>com.websocket.WebSocket</servlet-class>
 	</servlet>
-	<servlet>
-		<servlet-name>LoginServlet</servlet-name>
-		<servlet-class>com.websocket.LoginServlet</servlet-class>
-	</servlet>-->
-
-	<!--<servlet-mapping>
-		<servlet-name>wsServlet</servlet-name>
-		<url-pattern>/wsServlet</url-pattern>
-	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>LoginServlet</servlet-name>
-		<url-pattern>/LoginServlet</url-pattern>
-	</servlet-mapping>-->
+		<servlet-name>wsServlet</servlet-name>
+		<url-pattern>/ws</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>dispatcherServlet</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-	<servlet-mapping>
-		<servlet-name>dispatcherServlet</servlet-name>
-		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>default</servlet-name>
 		<url-pattern>*.css</url-pattern>
@@ -59,5 +47,9 @@
 		<url-pattern>*.mp3</url-pattern>
 		<url-pattern>*.ogg</url-pattern>
 		<url-pattern>*.wav</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>dispatcherServlet</servlet-name>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 </web-app>
