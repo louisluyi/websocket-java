@@ -11,9 +11,9 @@ public class WebSocket extends WebSocketServlet{
 
     private static final long serialVersionUID = -4853540828121130946L;
 
-    protected StreamInbound createWebSocketInbound(String arg0 , HttpServletRequest arg1) throws ClientException{
-        String name = arg1.getParameter("username");
-        return new UserClient(name);
+    protected StreamInbound createWebSocketInbound(String arg0, HttpServletRequest request) throws ClientException{
+        String username = request.getParameter("username");
+        return new UserClient(username);
     }
 
     /**

@@ -3,8 +3,9 @@ package com.client;
 import com.exception.ClientErrorType;
 import com.exception.ClientException;
 import com.google.gson.Gson;
-import com.message.MessageDTO;
+import com.message.DialogueDTO;
 import com.server.ContactServer;
+import com.user.UserDTO;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.websocket.MessageInbound;
@@ -14,8 +15,6 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by luyi-netease on 2016/3/17.
@@ -26,7 +25,7 @@ public class UserClient extends MessageInbound{
     private static ContactServer contactServer = ContactServer.getInstance();
 
     @Getter
-    private String username;
+    private UserDTO user;
 
     private WsOutbound wsOutbound;
 
@@ -40,7 +39,7 @@ public class UserClient extends MessageInbound{
         if(StringUtils.isEmpty(username)){
             throw ClientException.builder().errorCode(ClientErrorType.systemError).errorMessage("用户名不存在").build();
         }
-        this.username = username;
+        user = UserDTO.builder().username(username).build();
         contactServer.addUserClient(this);
     }
 
@@ -50,8 +49,7 @@ public class UserClient extends MessageInbound{
      */
     public void onOpen(WsOutbound outbound){
         System.out.println("Open Client.");
-        this.wsOutbound = outbound;
-        sendMessage("系统消息： " + username + ", 欢迎进入聊天室!");
+        wsOutbound = outbound;
     }
 
     @Override
@@ -68,11 +66,12 @@ public class UserClient extends MessageInbound{
      * 接收文本信息
      */
     public void onTextMessage(CharBuffer cb) throws IOException{
+        String message = cb.toString();
         Gson gson = new Gson();
         try{
-            MessageDTO messageDTO = gson.fromJson(cb.toString(), MessageDTO.class);
-            for(String toUser : messageDTO.getToUsers()){
-                contactServer.sendMessage(messageDTO.getMessage(), toUser);
+            DialogueDTO dialogueDTO = gson.fromJson(message, DialogueDTO.class);
+            for(UserDTO toUser : dialogueDTO.getToUsers()){
+                contactServer.sendMessage(message, toUser.getUsername());
             }
         }
         catch (Exception e){

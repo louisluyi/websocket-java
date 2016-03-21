@@ -1,5 +1,6 @@
 package com.message;
 
+import com.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,20 +16,25 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageDTO {
+public class DialogueDTO {
 
     /**
-     * 发送方的username
+     * 类型
      */
-    private String fromUser;
+    private int type = MessageType.DIALOGUE;
+    /**
+     * 发送方的user
+     */
+    private UserDTO fromUser;
 
     /**
-     * 接收方的usernames
+     * 接收方的users
      */
-    private List<String> toUsers;
+    private List<UserDTO> toUsers;
 
     /**
      * 消息内容
      */
     private String message;
+
 }

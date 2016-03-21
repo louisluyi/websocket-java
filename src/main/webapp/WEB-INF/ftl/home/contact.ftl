@@ -10,6 +10,7 @@
 </#assign>
 
 <@template "聊天室" styles scripts>
+    <input type="hidden" id="username" value="${username}"/>
     <div class="middle-container">
         <h3 class="welcome">
             欢迎你，${username}  <a href="javascript:void(0);" id="logout">[退出]</a>
