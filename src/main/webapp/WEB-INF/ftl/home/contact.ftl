@@ -5,7 +5,9 @@
 </#assign>
 <#assign scripts>
 <script>
-    seajs.use('/js/module/contactRoom');
+    seajs.use('/js/module/contactRoom', function(process){
+        process.init();
+    });
 </script>
 </#assign>
 
@@ -16,8 +18,8 @@
             欢迎你，${username}  <a href="javascript:void(0);" id="logout">[退出]</a>
         </h3>
         <div class="main-container">
-            <ul id="user_list" class="user-list"></ul>
-            <ul id="contact_content_list" class="contact-content-list"></ul>
+            <ul id="user_info_list" class="user-info-list"></ul>
+            <ul id="dialog_list" class="dialog-list"></ul>
         </div>
     </div>
 </@>

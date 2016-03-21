@@ -21,7 +21,7 @@
     border:1px solid #ddd;
     border-radius: 5px;
 }
-.user-list{
+.user-info-list{
     float: left;
     box-sizing: border-box;
     width:250px;
@@ -31,19 +31,19 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
-.user-list > .item{
+.user-info-list > .item{
     box-sizing: border-box;
-    padding:10px;
-    height:65px;
+    padding:10px 10px 0 10px;
+    height:60px;
     cursor:pointer;
 }
-.user-list > .item:hover{
+.user-info-list > .item:hover{
+    background: #D7E5EA;
+}
+.user-info-list > .selected, .user-info-list > .selected:hover{
     background: #c3d6dd;
 }
-.user-list > .selected, .user-list > .selected:hover{
-    background: #acbfdd;
-}
-.user-list .user-img-container{
+.user-info-list .user-img-container{
     float: left;
     width:40px;
     height:40px;
@@ -53,7 +53,7 @@
 .user-img-container > img{
     float: left;
 }
-.user-list .user-content{
+.user-info-list .user-content{
     margin-left: 50px;
     color:#222;
 }
@@ -79,11 +79,55 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
-.contact-content-list{
+.dialog-list{
     margin-left: 250px;
     box-sizing: border-box;
     height:100%;
     background: #fff;
     overflow-y: auto;
     overflow-x: hidden;
+}
+.dialog-list > .item{
+    display: none;
+    height:100%;
+}
+.dialog-list .selected{
+    display: block;
+}
+.dialog-list .dialog-cotent-list{
+    box-sizing: border-box;
+    height:450px;
+    border-bottom: 1px solid #ddd;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.dialog-list .send-container{
+    box-sizing: border-box;
+    padding:5px 10px;
+    height:150px;
+}
+.send-container .message-input{
+    box-sizing: border-box;
+    display: block;
+    width:100%;
+    height:105px;
+    border:0;
+    outline: 0;
+    font-size:14px;
+    resize:none;
+}
+.send-container .submit-btn{
+    float: right;
+    margin-top:5px;
+    padding:5px 10px;
+    font-size:15px;
+    line-height:1;
+    background: #666;
+    color:#fff;
+    border-radius: 3px;
+    cursor: default;
+}
+.send-container .submit{
+    background: #00c500;
+    cursor: pointer;
 }

@@ -3,7 +3,6 @@
  */
 'use strict';
 define(function(require, exports, module){
-    require('/js/tools/DateFormat');
     /**
      * Dialogue 构造函数
      * @param owner 类型：User，发起人
@@ -25,16 +24,18 @@ define(function(require, exports, module){
     Dialogue.prototype.render = function(userInfoList, dialogList){
         var self = this;
 
-        var $userInfo = $('<li class="item"><div class="user-img-container"><i class="new-message-count"></i></div><div class="user-content"><p class="username"></p><p class="text"></p><span class="time"></span></div></li>');
+        var $userInfo = $('<li class="item"><div class="user-img-container"><i class="new-message-count"></i></div><div class="user-content"><p class="username"></p><p class="text"></p></div></li>');
         self.userInfo = $userInfo[0];
-        $userInfo.find('.username').html(self.usernames);
+        var usernames = '';
         for(var i = 0; i < self.others.length; ++i){
+            if(i !== 0) usernames += ',';
+            usernames += self.others[i].username;
             $userInfo.find('.user-img-container').append('<img src="/img/weixin.png" alt="头像" />');
         }
-        $userInfo.find('.time').html(new Date().format('HH:mm'));
+        $userInfo.find('.username').html(usernames);
         $userInfo.appendTo(userInfoList);
 
-        var $dialog = $('<li class="item"><ul class="dialog-list"></ul><div class="send-container"><input type="text" class="message" /><a class="submit-btn">发送</a></div></li>');
+        var $dialog = $('<li class="item"><ul class="dialog-cotent-list"></ul><div class="send-container"><textarea class="message-input"></textarea><a class="submit-btn">发送</a></div></li>');
         self.dialog = $dialog[0];
         $dialog.appendTo(dialogList);
 
@@ -62,7 +63,7 @@ define(function(require, exports, module){
             self.hideNewMessageCount();
         });
         //信息输入时检查信息是否为空
-        $dialog.on('keyup blur', '.message', function(){
+        $dialog.on('keyup blur', '.message-input', function(){
             var msg = $.trim($(this).val());
             msg === '' ? $submit.removeClass('submit') : $submit.addClass('submit');
         });
@@ -70,10 +71,11 @@ define(function(require, exports, module){
         $dialog.on('click', '.submit', function(){
             var msg = $.trim($(this).val());
             self.sendMessage(msg);
+            self.showNewMessage(msg, self.owner.username);
         });
         //接收信息
-        self.ws.on('message', function(message){
-            self.receiveMessage(message);
+        self.ws.on('dialogue', function(dialogueDTO){
+            self.receiveMessage(dialogueDTO);
         });
     };
     /**
@@ -82,28 +84,23 @@ define(function(require, exports, module){
      */
     Dialogue.prototype.sendMessage = function(message){
         var self = this,
-            messageDTO = {
-                fromUser:self.owner.username,
-                toUsers:[],
+            dialogueDTO = {
+                type:2,
+                fromUser:self.owner,
+                toUsers:self.others,
                 message:message
             };
-        var i, len = self.others.length;
-        for(i = 0; i < len; ++i){
-            messageDTO.toUsers.push(self.others[i].username);
-        }
-        self.ws.send(JSON.stringify(messageDTO));
+        self.ws.send(JSON.stringify(dialogueDTO));
     };
     /**
      * 收到信息
-     * @param message
+     * @param dialogueDTO
      */
-    Dialogue.prototype.receiveMessage = function(message){
-        var self = this,
-            messageDTO;
+    Dialogue.prototype.receiveMessage = function(dialogueDTO){
+        var self = this;
         try{
-            messageDTO = JSON.parse(message);
-            if(self.checkMessage(messageDTO)){
-                self.showNewMessage(messageDTO.message, messageDTO.fromUser);
+            if(self.checkMessage(dialogueDTO)){
+                self.showNewMessage(dialogueDTO.message, messageDTO.fromUser.username);
             }
         }
         catch (e){
@@ -112,13 +109,13 @@ define(function(require, exports, module){
     };
     /**
      * 检查信息是不是应该由这个dialogue接收
-     * @param messageDTO
+     * @param dialogueDTO
      * @returns {boolean}
      */
-    Dialogue.prototype.checkMessage = function(messageDTO){
+    Dialogue.prototype.checkMessage = function(dialogueDTO){
         var self = this,
-            fromUser = messageDTO.fromUser.username,
-            toUsers = messageDTO.toUsers;
+            fromUser = dialogueDTO.fromUser.username,
+            toUsers = dialogueDTO.toUsers;
         if(!fromUser || !toUsers) return false;
         var isExisted = function(username){
             var i, len;
@@ -143,13 +140,15 @@ define(function(require, exports, module){
     Dialogue.prototype.showNewMessage = function(message, username){
         var self = this,
             $newMessage = $('<li class="item"><img class="user-img" src="/img/weixin.png"><div class="container"><p class="username"></p><p class="message"></p></div></li>');
-        self.newMessageCount ++;
         if(username === self.owner.username){
             $newMessage.addClass('from-owner');
         }
+        else{
+            self.newMessageCount ++;
+        }
         $newMessage.find('.username').html(username);
         $newMessage.find('.message').html(message);
-        $newMessage.appendTo($(self.dialog).find('.dialog-list'));
+        $newMessage.appendTo($(self.dialog).find('.dialog-cotent-list'));
         self.showNewMessageCount();
         self.scrollToCurrentMessage();
     };
@@ -172,7 +171,7 @@ define(function(require, exports, module){
      */
     Dialogue.prototype.scrollToCurrentMessage = function(){
         var self = this,
-            $dialogList = $(self.dialog).find('.dialog-list'),
+            $dialogList = $(self.dialog).find('.dialog-cotent-list'),
             top =  $dialogList.find('.item').last().position().top;
         top && $dialogList.scrollTop(top);
     };

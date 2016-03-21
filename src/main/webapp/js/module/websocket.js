@@ -8,9 +8,12 @@ define(function(require, exports, module) {
         this.onOpen = [];
         this.onMessage = [];
         this.onClose = [];
-        this.send = this.websocket.send;
         this.close = this.websocket.close;
+        this.bindEvent();
     };
+    MyWebSocket.prototype.send = function(message){
+        this.websocket.send.call(this.websocket, message);
+    }
     MyWebSocket.prototype.bindEvent = function(){
         var self = this,
             i, len;
@@ -27,6 +30,7 @@ define(function(require, exports, module) {
                     self.onClose[i].apply(null, arguments);
                 }
             }
+            console.log('failed');
         };
         self.websocket.onmessage = function(){
             for(i = 0, len = self.onMessage.length; i < len; ++i){
@@ -46,7 +50,7 @@ define(function(require, exports, module) {
         var self = this;
         var onUserList = function(message){
             try{
-                message = JSON.parse(message);
+                message = JSON.parse(message.data);
                 if(message.type === 1){
                     fn(message);
                 }
@@ -57,7 +61,7 @@ define(function(require, exports, module) {
         };
         var onDialogue = function(message){
             try{
-                message = JSON.parse(message);
+                message = JSON.parse(message.data);
                 if(message.type === 2){
                     fn(message);
                 }

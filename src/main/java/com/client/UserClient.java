@@ -24,6 +24,8 @@ public class UserClient extends MessageInbound{
 
     private static ContactServer contactServer = ContactServer.getInstance();
 
+    private static int userId = 0;
+
     @Getter
     private UserDTO user;
 
@@ -39,8 +41,7 @@ public class UserClient extends MessageInbound{
         if(StringUtils.isEmpty(username)){
             throw ClientException.builder().errorCode(ClientErrorType.systemError).errorMessage("用户名不存在").build();
         }
-        user = UserDTO.builder().username(username).build();
-        contactServer.addUserClient(this);
+        user = UserDTO.builder().id(++userId).username(username).build();
     }
 
     @Override
@@ -50,6 +51,12 @@ public class UserClient extends MessageInbound{
     public void onOpen(WsOutbound outbound){
         System.out.println("Open Client.");
         wsOutbound = outbound;
+        try{
+            contactServer.addUserClient(this);
+        }
+        catch (ClientException e){
+            log.info("create Client Exception");
+        }
     }
 
     @Override
@@ -71,7 +78,7 @@ public class UserClient extends MessageInbound{
         try{
             DialogueDTO dialogueDTO = gson.fromJson(message, DialogueDTO.class);
             for(UserDTO toUser : dialogueDTO.getToUsers()){
-                contactServer.sendMessage(message, toUser.getUsername());
+                contactServer.sendMessage(message, toUser);
             }
         }
         catch (Exception e){
@@ -86,16 +93,28 @@ public class UserClient extends MessageInbound{
     public void onBinaryMessage(ByteBuffer bb) throws IOException{
     }
 
+    /**
+     * 发送信息给对应的用户
+     * @param message
+     */
     public void sendMessage(String message){
         try {
             wsOutbound.writeTextMessage(CharBuffer.wrap(message));
+            wsOutbound.flush();
         }
         catch (IOException e){
             e.printStackTrace();
         }
     }
 
-
+    public void close(){
+        try {
+            wsOutbound.close(0, null);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
     public int getReadTimeout(){
         // 设置websocket的超时时间，单位秒

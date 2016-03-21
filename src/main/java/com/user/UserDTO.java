@@ -10,6 +10,8 @@ import lombok.Data;
 @Builder
 public class UserDTO {
 
+    private int id;
+
     private String username;
 
 }

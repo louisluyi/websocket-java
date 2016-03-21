@@ -32,10 +32,6 @@ public class LoginController {
             map.addAttribute("errorMsg", "用户名不能为空");
             return "home/login";
         }
-        if(contactServer.isUserExisted(username)){
-            map.addAttribute("errorMsg", "当前用户已经存在");
-            return "home/login";
-        }
         map.addAttribute("username", username);
         return "home/contact";
     }

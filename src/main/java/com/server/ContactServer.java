@@ -4,12 +4,16 @@ import com.exception.ClientErrorType;
 import com.exception.ClientException;
 import com.client.UserClient;
 import com.google.gson.Gson;
+import com.message.MessageType;
 import com.message.UserListDTO;
 import com.user.UserDTO;
 import org.apache.catalina.User;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,17 +35,14 @@ public class ContactServer {
     }
 
     public void addUserClient(UserClient userClient) throws ClientException{
-        if(isUserExisted(userClient.getUser())){
-            throw ClientException.builder().errorCode(ClientErrorType.userExisted).errorMessage("用户名已经存在").build();
-        }
+        userClients.add(userClient);
         sendUserListDTOToNewUser(userClient.getUser());
         sendUserToCurrentClients(userClient.getUser());
-        userClients.add(userClient);
     }
 
-    public boolean isUserExisted(UserDTO user){
+    public boolean isUserExisted(String username){
         for(UserClient userClient : userClients){
-            if(userClient.getUser().getUsername().equals(user.getUsername())){
+            if(userClient.getUser().getUsername().equals(username)){
                 return true;
             }
         }
@@ -55,9 +56,11 @@ public class ContactServer {
     private void sendUserListDTOToNewUser(UserDTO newUser){
         List<UserDTO> userList = new ArrayList<UserDTO>();
         for(UserClient other : userClients){
+            if(other.getUser().getId() == newUser.getId()) continue;
             userList.add(other.getUser());
         }
-        UserListDTO userListDTO = UserListDTO.builder().userList(userList).build();
+        if(CollectionUtils.isEmpty(userList)) return;
+        UserListDTO userListDTO = UserListDTO.builder().type(MessageType.USER_LIST).userList(userList).build();
         sendMessage(new Gson().toJson(userListDTO), newUser);
     }
 
@@ -68,8 +71,9 @@ public class ContactServer {
     private void sendUserToCurrentClients(UserDTO newUser){
         List<UserDTO> userList = new ArrayList<UserDTO>();
         userList.add(newUser);
-        UserListDTO userListDTO = UserListDTO.builder().userList(userList).build();
+        UserListDTO userListDTO = UserListDTO.builder().type(MessageType.USER_LIST).userList(userList).build();
         for(UserClient other : userClients){
+            if(other.getUser().getId() == newUser.getId()) continue;
             sendMessage(new Gson().toJson(userListDTO), other.getUser());
         }
     }
@@ -80,6 +84,7 @@ public class ContactServer {
      * @param toUser 对方用户
      */
     public void sendMessage(String message, UserDTO toUser){
+        if(StringUtils.isEmpty(message)) return;
         UserClient toUserClient = getUserClient(toUser);
         if(toUserClient == null) return;
         toUserClient.sendMessage(message);
@@ -87,8 +92,9 @@ public class ContactServer {
 
 
     private UserClient getUserClient(UserDTO user){
+        if(user == null) return null;
         for(UserClient userClient : userClients){
-            if(userClient.getUser().getUsername().equals(user.getUsername())){
+            if(userClient.getUser().getId() == user.getId()){
                 return userClient;
             }
         }
