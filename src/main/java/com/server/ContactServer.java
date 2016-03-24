@@ -35,6 +35,12 @@ public class ContactServer {
     }
 
     public void addUserClient(UserClient userClient) throws ClientException{
+        //查找同名用户，清除
+        for(UserClient other : userClients){
+            if(other.getUser().getUsername().equals(userClient.getUser().getUsername())){
+                userClients.remove(other);
+            }
+        }
         userClients.add(userClient);
         sendUserListDTOToNewUser(userClient.getUser());
         sendUserToCurrentClients(userClient.getUser());
@@ -90,11 +96,15 @@ public class ContactServer {
         toUserClient.sendMessage(message);
     }
 
-
+    /**
+     * 获取对应用户，依据用户名
+     * @param user
+     * @return
+     */
     private UserClient getUserClient(UserDTO user){
         if(user == null) return null;
         for(UserClient userClient : userClients){
-            if(userClient.getUser().getId() == user.getId()){
+            if(userClient.getUser().getUsername().equals(user.getUsername())){
                 return userClient;
             }
         }

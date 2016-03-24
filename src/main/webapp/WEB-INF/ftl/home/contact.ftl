@@ -12,13 +12,17 @@
 </#assign>
 
 <@template "聊天室" styles scripts>
-    <input type="hidden" id="username" value="${username}"/>
+    <input type="hidden" id="username" value="${userName}"/>
+    <input type="hidden" id="userId" value=""/>
     <div class="middle-container">
-        <h3 class="welcome">
-            欢迎你，${username}  <a href="javascript:void(0);" id="logout">[退出]</a>
-        </h3>
         <div class="main-container">
-            <ul id="user_info_list" class="user-info-list"></ul>
+            <ul id="user_info_list" class="user-info-list">
+                <li class="owner" title="${userName}">
+                    <img src="/img/weixin.png" />
+                    <p class="username">${userName}</p>
+                    <a href="javascript:void(0);" id="logout" class="logout"></a>
+                </li>
+            </ul>
             <ul id="dialog_list" class="dialog-list"></ul>
         </div>
     </div>

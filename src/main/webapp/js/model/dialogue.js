@@ -19,6 +19,9 @@ define(function(require, exports, module){
         this.ws = param.ws;
         this.contentList = [];
         this.newMessageCount = 0;
+        if(Dialogue.checkDialogueExisted(this)){
+            return;
+        }
         this.render(param.userInfoList, param.dialogList);
     };
     Dialogue.prototype.render = function(userInfoList, dialogList){
@@ -45,7 +48,7 @@ define(function(require, exports, module){
         var self = this,
             $userInfo = $(self.userInfo),
             $dialog = $(self.dialog),
-            $message = $dialog.find('.message'),
+            $message = $dialog.find('.message-input'),
             $submit = $dialog.find('.submit-btn');
         //点击用户头像，切换对话框，并且清空新信息数
         $userInfo.on('click', function(){
@@ -56,22 +59,33 @@ define(function(require, exports, module){
             $userInfo.addClass('selected');
             $dialog.siblings('.item').removeClass('selected');
             $dialog.addClass('selected');
+            //滚动到最后一条
+            self.scrollToCurrentMessage();
         });
         //点击对话框，清空新信息数
         $(self.dialog).on('click', function(){
             self.newMessageCount = 0;
             self.hideNewMessageCount();
         });
-        //信息输入时检查信息是否为空
-        $dialog.on('keyup blur', '.message-input', function(){
+        //信息输入时检查信息
+        $message.on('keyup', function(e){
+            if(e.which === 13){
+                var message = $.trim($(this).val());
+                if(message !== ''){
+                    $submit.trigger('click');
+                }
+            }
+        }).on('keyup blur', function(){
             var msg = $.trim($(this).val());
-            msg === '' ? $submit.removeClass('submit') : $submit.addClass('submit');
+            msg === '' ? $submit.removeClass('submit-enable') : $submit.addClass('submit-enable');
         });
         //提交信息
-        $dialog.on('click', '.submit', function(){
-            var msg = $.trim($(this).val());
+        $submit.on('click', function(){
+            var msg = $.trim($message.val());
+            if(msg === '') return;
             self.sendMessage(msg);
             self.showNewMessage(msg, self.owner.username);
+            $message.val('');
         });
         //接收信息
         self.ws.on('dialogue', function(dialogueDTO){
@@ -100,11 +114,12 @@ define(function(require, exports, module){
         var self = this;
         try{
             if(self.checkMessage(dialogueDTO)){
-                self.showNewMessage(dialogueDTO.message, messageDTO.fromUser.username);
+                self.showNewMessage(dialogueDTO.message, dialogueDTO.fromUser.username);
             }
         }
         catch (e){
             //it doesn't belong to this dialogue
+            console.log(e.stack);
         }
     };
     /**
@@ -114,23 +129,20 @@ define(function(require, exports, module){
      */
     Dialogue.prototype.checkMessage = function(dialogueDTO){
         var self = this,
-            fromUser = dialogueDTO.fromUser.username,
-            toUsers = dialogueDTO.toUsers;
-        if(!fromUser || !toUsers) return false;
-        var isExisted = function(username){
+            fromUser = dialogueDTO.fromUser;
+            //toUsers = dialogueDTO.toUsers;
+        var isExisted = function(user){
             var i, len;
-            if(username === self.owner.username) return true;
             for(i = 0, len = self.others.length; i < len; ++i){
-                if(username === self.others[i].username) return true;
+                if(user.username === self.others[i].username) return true;
             }
             return false;
         };
-        if(!isExisted(fromUser)) return false;
-        var i, len;
+        /*var i, len;
         for(i = 0, len = toUsers.length; i < len; ++i){
             if(!isExisted(toUsers[i].username)) return false;
-        }
-        return true;
+        }*/
+        return fromUser && isExisted(fromUser);
     };
     /**
      * 显示接收的新信息
@@ -145,11 +157,11 @@ define(function(require, exports, module){
         }
         else{
             self.newMessageCount ++;
+            self.showNewMessageCount();
         }
-        $newMessage.find('.username').html(username);
-        $newMessage.find('.message').html(message);
+        $newMessage.find('.username').text(username);
+        $newMessage.find('.message').text(message);
         $newMessage.appendTo($(self.dialog).find('.dialog-cotent-list'));
-        self.showNewMessageCount();
         self.scrollToCurrentMessage();
     };
     /**
@@ -158,7 +170,7 @@ define(function(require, exports, module){
     Dialogue.prototype.showNewMessageCount = function(){
         var self = this,
             count = self.newMessageCount;
-        count > 0 && $(self.userInfo).find('.new-message-count').show();
+        count > 0 && $(self.userInfo).find('.new-message-count').html(count).show();
     };
     /**
      * 隐藏当前信息数
@@ -172,8 +184,54 @@ define(function(require, exports, module){
     Dialogue.prototype.scrollToCurrentMessage = function(){
         var self = this,
             $dialogList = $(self.dialog).find('.dialog-cotent-list'),
-            top =  $dialogList.find('.item').last().position().top;
+            $last = $dialogList.find('.item').last(),
+            top;
+        if(!$last.length) return;
+        top = $last.position().top;
         top && $dialogList.scrollTop(top);
+    };
+    /**
+     * 检查是否已经存在相同的对话实例
+     */
+    var dialogues = []; //保存dialogues的实例
+    Dialogue.checkDialogueExisted = function(){
+        //判断两者的others是否一样
+        var othersEqual = function(arr1, arr2){
+            if(arr1.length !== arr2.length) return false;
+            for(var i = 0, len = arr1.length; i < len; ++i){
+                var isExisted = false;
+                for(var j = 0; j < len; ++j){
+                    if(arr2[j].username === arr1[i].username){
+                        isExisted = true;
+                        break;
+                    }
+                }
+                if(isExisted === false){
+                    return false;
+                }
+            }
+            return true;
+        };
+        return function(newDialogue){
+            for(var i = 0, len = dialogues.length; i < len; ++i){
+                if(othersEqual(dialogues[i].others, newDialogue.others)){
+                    return true;
+                }
+            }
+            dialogues.push(newDialogue);
+            return false;
+        }
+    }();
+    /**
+     * 检查信息数
+     * @returns {number}
+     */
+    Dialogue.getNewMessageCount = function(){
+        var count = 0;
+        for(var i = 0; i < dialogues.length; ++i){
+            count += dialogues[i].newMessageCount || 0;
+        }
+        return count;
     };
 
     module.exports = Dialogue;

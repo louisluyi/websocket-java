@@ -3,9 +3,10 @@
 <html>
 <head>
     <title>${title}</title>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="keywords" content="websocket, contact room">
     <meta name="description" content="websocket in tomcat">
+    <meta name="renderer" content="webkit">
     <link href="/css/common/reset.css" rel="stylesheet" type="text/css">
     ${styles}
 </head>

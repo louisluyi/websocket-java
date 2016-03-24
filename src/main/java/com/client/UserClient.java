@@ -7,6 +7,7 @@ import com.message.DialogueDTO;
 import com.server.ContactServer;
 import com.user.UserDTO;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
@@ -118,6 +119,6 @@ public class UserClient extends MessageInbound{
 
     public int getReadTimeout(){
         // 设置websocket的超时时间，单位秒
-        return 60000;
+        return 600000000;
     }
 }

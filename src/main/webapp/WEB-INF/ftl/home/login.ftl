@@ -60,7 +60,7 @@
 </#assign>
 
 <@template "login" styles scripts>
-<form action="/contact" method="post" id="login_form" class="login-form">
+<form action="/login/check" method="post" id="login_form" class="login-form">
     <h3 class="welcome">Welcome to contact room in websocket</h3>
     <p class="input-row">
         <input type="text" name="username" placeholder="请输入您的用户名" id="username" class="username"/>

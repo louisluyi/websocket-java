@@ -1,25 +1,26 @@
 .middle-container{
     position: fixed;
     left:50%;
-    top:100px;
+    top:50%;
     box-sizing: border-box;
-    margin-left:-400px;
+    margin:-300px 0 0 -400px;
     width:800px;
 }
 .welcome{
-    text-align: right;
+    text-align: center;
     font-size:15px;
     font-weight: normal;
     line-height:30px;
 }
 #logout{
-    margin-left: 20px;
+    margin-left: 5px;
     color:#c00;
 }
 .main-container{
     height:600px;
-    border:1px solid #ddd;
-    border-radius: 5px;
+    -webkit-box-shadow: 0 0 5px #666;
+    -moz-box-shadow: 0 0 5px #666;
+    box-shadow: 0 0 5px #666;
 }
 .user-info-list{
     float: left;
@@ -27,35 +28,75 @@
     width:250px;
     height:100%;
     border-right: 1px solid #ddd;
-    background: #eee;
+    background: #2E3238;
     overflow-y: auto;
     overflow-x: hidden;
+}
+.user-info-list > .owner{
+    position: relative;
+    padding:10px;
+    border-bottom:1px solid #aaa;
+}
+.user-info-list > .owner > img{
+    float: left;
+    width:40px;
+    height:40px;
+}
+.user-info-list > .owner > .username{
+    margin:0 30px 0 50px;
+    height:40px;
+    line-height:40px;
+    font-size:18px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color:#fff;
+}
+.logout{
+    position:absolute;
+    top:15px;
+    right:5px;
+    width:29px;
+    height:29px;
+    background: url(/img/shutdown.png) no-repeat 0 0 scroll;
 }
 .user-info-list > .item{
     box-sizing: border-box;
     padding:10px 10px 0 10px;
     height:60px;
     cursor:pointer;
+    color:#fff;
 }
-.user-info-list > .item:hover{
-    background: #D7E5EA;
-}
-.user-info-list > .selected, .user-info-list > .selected:hover{
-    background: #c3d6dd;
+.user-info-list > .item:hover, .user-info-list > .selected{
+    background: #3A3F45;
 }
 .user-info-list .user-img-container{
+    position:relative;
     float: left;
     width:40px;
     height:40px;
     background: #ddd;
-    overflow: hidden;
 }
 .user-img-container > img{
     float: left;
 }
+.user-img-container .new-message-count{
+    display: none;
+    position: absolute;
+    right: -5px;
+    top: -9px;
+    padding: 0px 3px;
+    min-width: 10px;
+    height: 16px;
+    color: #fff;
+    text-align: center;
+    line-height: 16px;
+    font-size: smaller;
+    border-radius: 8px;
+    background: rgb(215, 0, 15);
+}
 .user-info-list .user-content{
     margin-left: 50px;
-    color:#222;
 }
 .user-content .username{
     width:150px;
@@ -83,7 +124,7 @@
     margin-left: 250px;
     box-sizing: border-box;
     height:100%;
-    background: #fff;
+    background: #fff url(/img/weixin-grey.jpg) no-repeat 224px 250px scroll;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -96,10 +137,73 @@
 }
 .dialog-list .dialog-cotent-list{
     box-sizing: border-box;
+    padding:10px 10px 0 10px;
     height:450px;
     border-bottom: 1px solid #ddd;
     overflow-x: hidden;
     overflow-y: auto;
+    background: #eee;
+}
+.dialog-cotent-list::-webkit-scrollbar{
+    width: 6px;
+    height: 6px;
+}
+.dialog-cotent-list::-webkit-scrollbar-track-piece{
+    background-color: #CCC;
+    -webkit-border-radius: 6px;
+}
+.dialog-cotent-list::-webkit-scrollbar-thumb:vertical{
+    height: 5px;
+    background-color: #999;
+    -webkit-border-radius: 6px;
+}
+.dialog-cotent-list::-webkit-scrollbar-thumb:horizontal{
+    width: 5px;
+    background-color: #CCC;
+    -webkit-border-radius: 6px;
+}
+.dialog-cotent-list .item{
+    margin-bottom:10px;
+    overflow: hidden;
+}
+.dialog-cotent-list .item .user-img{
+    float: left;
+    width:40px;
+    height:40px;
+}
+.dialog-cotent-list .item .container{
+    float: left;
+    margin-left:10px;
+}
+.dialog-cotent-list .username{
+    color:#666;
+}
+.dialog-cotent-list .message{
+    display: inline-block;
+    padding:5px 10px;
+    border:1px solid #aaa;
+    color:#222;
+    border-radius:3px;
+    background: #fff;
+    font-size:13px;
+    max-width: 400px;
+    word-wrap: break-word;
+    word-break: normal;
+}
+.dialog-cotent-list .from-owner .user-img{
+    float: right;
+}
+.dialog-cotent-list .from-owner .container{
+    float: right;
+    margin:0 10px 0 0;
+}
+.dialog-cotent-list .from-owner .username{
+    display: none;
+}
+.dialog-cotent-list .from-owner .message {
+    margin-top:5px;
+    border:0;
+    background: #25D025;
 }
 .dialog-list .send-container{
     box-sizing: border-box;
@@ -114,6 +218,7 @@
     border:0;
     outline: 0;
     font-size:14px;
+    font-family: Microsoft YaHei, Arial, Helvetica, sans-serif;
     resize:none;
 }
 .send-container .submit-btn{
@@ -127,7 +232,7 @@
     border-radius: 3px;
     cursor: default;
 }
-.send-container .submit{
+.send-container .submit-enable{
     background: #00c500;
     cursor: pointer;
 }

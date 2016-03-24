@@ -5,6 +5,7 @@ define(function(require, exports, module){
     var User = require('/js/model/user');
     var Dialogue = require('/js/model/dialogue');
     var MyWebSocket = require('/js/module/websocket');
+    var MyNotification = require('/js/model/notification');
 
     var username = $('#username').val();
     var ws = new MyWebSocket('ws://localhost:8080/ws?username=' + username);
@@ -12,7 +13,7 @@ define(function(require, exports, module){
         $dialogList = $('#dialog_list');
     var process = {
         init:function(){
-            this.createDialogue();
+            this.notification();
             this.eventHandler();
         },
         createDialogue:function(userListDTO){
@@ -32,6 +33,19 @@ define(function(require, exports, module){
                 });
             }
         },
+        notification:function(){
+            var notification = new MyNotification();
+            window.setInterval(function(){
+                var count = Dialogue.getNewMessageCount();
+                if(count > 0){
+                    notification.show({
+                        url:'/img/weixin.png',
+                        title:'来自聊天室的提醒',
+                        body:'您有' + count + '条新消息'
+                    });
+                }
+            }, 10 * 1000);
+        },
         eventHandler:function(){
             ws.on('open', function(){
                 console.log('success');
@@ -39,11 +53,12 @@ define(function(require, exports, module){
             ws.on('userList', function(userListDTO){
                 process.createDialogue(userListDTO);
             });
-            /*ws.on('message', function(message){
-
-            });*/
+            $('#logout').on('click', function(){
+                ws.close();
+                location.href = '/login';
+            });
             $(window).on('unload', function(){
-                window.setTimeout(function(){}, 0);
+                window.setTimeout(function(){}, 100);
                 ws.close();
             });
         }

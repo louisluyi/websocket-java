@@ -8,12 +8,14 @@ define(function(require, exports, module) {
         this.onOpen = [];
         this.onMessage = [];
         this.onClose = [];
-        this.close = this.websocket.close;
         this.bindEvent();
     };
     MyWebSocket.prototype.send = function(message){
         this.websocket.send.call(this.websocket, message);
-    }
+    };
+    MyWebSocket.prototype.close = function(){
+        this.websocket.close.apply(this.websocket, arguments);
+    };
     MyWebSocket.prototype.bindEvent = function(){
         var self = this,
             i, len;
