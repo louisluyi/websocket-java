@@ -8,7 +8,7 @@ define(function(require, exports, module){
     var MyNotification = require('/js/model/notification');
 
     var username = $('#username').val();
-    var ws = new MyWebSocket('ws://localhost:8080/ws?username=' + username);
+    var ws = new MyWebSocket('ws://10.250.22.92:8080/ws?username=' + username);
     var $userInfoList = $('#user_info_list'),
         $dialogList = $('#dialog_list');
     var process = {
